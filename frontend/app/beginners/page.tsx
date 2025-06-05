@@ -6,8 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, TelescopeIcon as Binoculars, BookOpen, MapPin, Camera, Users, ArrowRight, Router } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react"
-import { Bird, CommonBird, getCommonBirds } from "@/lib/api/birds"
+import { CommonBird, getCommonBirds } from "@/lib/api/birds"
+import { useState, useEffect } from "react"
 
 export default function BeginnersGuidePage() {
   // Hardcoded steps for getting started
@@ -29,7 +29,6 @@ export default function BeginnersGuidePage() {
 
     fetchCommonBirds()
   })
-
 
   const steps = [
     {
@@ -423,7 +422,7 @@ export default function BeginnersGuidePage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {commonBirds.map((bird: { id: Key; imageUrl: any; name: string; difficulty: string; description: string; habitat: string }) => (
+                  {commonBirds.map((bird) => (
                     <div key={bird.id} className="border rounded-lg overflow-hidden">
                       <img
                         src={bird.imageUrl || "/placeholder.svg"}

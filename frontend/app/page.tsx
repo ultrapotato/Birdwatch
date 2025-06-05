@@ -44,7 +44,7 @@ export default function Home() {
             </div>
             <div className="flex justify-center lg:justify-end">
               <img
-                src="/homepage_images/northern_cardinal.avif?height=400&width=600&query=colorful bird in natural habitat"
+                src="https://images.unsplash.com/photo-1624133310859-348852f33103?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=400&width=600&query=colorful bird in natural habitat"
                 alt="Bird watching"
                 className="rounded-lg object-cover shadow-xl"
                 width={600}
