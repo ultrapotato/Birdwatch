@@ -121,30 +121,40 @@ export default function Navigation() {
                   </Link>
                 ))}
                 <div className="border-t my-2"></div>
-                {authItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`flex items-center px-4 py-2 text-sm ${pathname === item.href
-                      ? "bg-green-50 text-green-600 font-medium"
-                      : "text-gray-700 hover:bg-gray-50"
-                      } rounded-md`}
-                    onClick={() => setIsOpen(false)}
+                {!user ?
+                  <button onClick={() => router.push("/login")}
+                    className="flex items-center px-4 py-2 text-sm text-green-600 hover:bg-red-50 rounded-md"
                   >
-                    {item.icon && item.icon}
-                    {item.name}
-                  </Link>
-                ))}
-                <button
-                  onClick={() => {
-                    handleSignOut()
-                    setIsOpen(false)
-                  }}
-                  className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </button>
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In
+                  </button>
+                  :
+                  (authItems.map((item, index) => index != 0 &&  (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={`flex items-center px-4 py-2 text-sm ${pathname === item.href
+                        ? "bg-green-50 text-green-600 font-medium"
+                        : "text-gray-700 hover:bg-gray-50"
+                        } rounded-md`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.icon && item.icon}
+                      {item.name}
+                    </Link>
+                  )))}
+
+                {user &&
+                  <button
+                    onClick={() => {
+                      handleSignOut()
+                      setIsOpen(false)
+                    }}
+                    className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </button>}
               </div>
             </SheetContent>
           </Sheet>
@@ -180,9 +190,6 @@ export default function Navigation() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="end" forceMount>
-
-
-
                     {
                       !user ?
                         <div className="inline-flex items-center">

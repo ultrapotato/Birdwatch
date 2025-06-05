@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "BirdWatch - Bird Sighting Platform",
   description: "Report and discover bird sightings in your area",
-  generator: 'v0.dev'
+  generator: 'moi'
 }
 
 export default function RootLayout({

@@ -37,7 +37,7 @@ export default function BeginnersGuidePage() {
       title: "Choose Your Equipment",
       description: "Start with a good pair of binoculars and a field guide. You don't need expensive gear to begin.",
       icon: <Binoculars className="h-8 w-8 text-green-600" />,
-      imageUrl: "/placeholder.svg?height=300&width=500&query=bird watching binoculars",
+      imageUrl: "https://plus.unsplash.com/premium_photo-1723737604431-38f248fc5473?q=80&w=2923&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=300&width=500&query=bird watching binoculars",
       tips: [
         "For beginners, 8x42 binoculars offer a good balance of magnification and field of view",
         "Look for binoculars with good eye relief if you wear glasses",
@@ -50,7 +50,7 @@ export default function BeginnersGuidePage() {
       title: "Learn Bird Identification Basics",
       description: "Focus on size, shape, color patterns, behavior, and habitat to identify birds.",
       icon: <BookOpen className="h-8 w-8 text-green-600" />,
-      imageUrl: "/placeholder.svg?height=300&width=500&query=bird identification guide",
+      imageUrl: "https://images.unsplash.com/photo-1486365227551-f3f90034a57c?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=300&width=500&query=bird identification guide",
       tips: [
         "Start with common birds in your area",
         "Pay attention to field marks - distinctive features that help identify a species",
@@ -63,7 +63,7 @@ export default function BeginnersGuidePage() {
       title: "Find Birding Locations",
       description: "Explore local parks, nature reserves, and even your backyard to find birds.",
       icon: <MapPin className="h-8 w-8 text-green-600" />,
-      imageUrl: "/placeholder.svg?height=300&width=500&query=birding location park",
+      imageUrl: "https://images.unsplash.com/photo-1519331379826-f10be5486c6f?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=300&width=500&query=birding location park",
       tips: [
         "Local parks and nature centers are great places to start",
         "Water sources like lakes, ponds, and rivers attract many bird species",
@@ -76,7 +76,7 @@ export default function BeginnersGuidePage() {
       title: "Document Your Sightings",
       description: "Keep track of the birds you see with notes, photos, or using the BirdWatch app.",
       icon: <Camera className="h-8 w-8 text-green-600" />,
-      imageUrl: "/placeholder.svg?height=300&width=500&query=birdwatcher taking notes",
+      imageUrl: "https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=300&width=500&query=birdwatcher taking notes",
       tips: [
         "Note the date, location, and conditions when you spot a bird",
         "Take photos if possible, but don't let photography distract from observation",
@@ -89,7 +89,7 @@ export default function BeginnersGuidePage() {
       title: "Connect with Other Birders",
       description: "Join local bird clubs, online forums, or BirdWatch community to learn from others.",
       icon: <Users className="h-8 w-8 text-green-600" />,
-      imageUrl: "/placeholder.svg?height=300&width=500&query=bird watching group",
+      imageUrl: "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=300&width=500&query=bird watching group",
       tips: [
         "Experienced birders are usually happy to share knowledge",
         "Group outings can help you find and identify more birds",
@@ -110,21 +110,21 @@ export default function BeginnersGuidePage() {
           description: "Excellent mid-range binoculars with great clarity and brightness.",
           price: "$$$",
           beginner: true,
-          imageUrl: "/placeholder.svg?height=100&width=100&query=Nikon Monarch binoculars",
+          imageUrl: "https://images.cdn.us-central1.gcp.commercetools.com/f7c8f2bb-aff1-4581-a826-1ad2527be222/Back-M5_8x42_rear_le-Qv5_JPih-large.png?height=100&width=100&query=Nikon Monarch binoculars",
         },
         {
           name: "Vortex Diamondback HD 8x42",
           description: "Great value with HD glass and wide field of view.",
           price: "$$$",
           beginner: true,
-          imageUrl: "/placeholder.svg?height=100&width=100&query=Vortex Diamondback binoculars",
+          imageUrl: "https://vortexoptics.com/media/catalog/product/v/t/vtx_bin_diamondback2_42_f_w_1.jpg?quality=80&bg-color=255,255,255&fit=bounds&height=338&width=578&canvas=578:338&dpr=2%202x?height=100&width=100&query=Vortex Diamondback binoculars",
         },
         {
           name: "Celestron Nature DX 8x42",
           description: "Budget-friendly option with good optics for beginners.",
           price: "$$",
           beginner: true,
-          imageUrl: "/placeholder.svg?height=100&width=100&query=Celestron Nature binoculars",
+          imageUrl: "https://www.celestron.com/cdn/shop/products/71332_nature_dx_8x42_1-R_570x380@2x.jpg?v=1654808560?height=100&width=100&query=Celestron Nature binoculars",
         },
       ],
     },
@@ -137,21 +137,21 @@ export default function BeginnersGuidePage() {
           description: "Comprehensive guide with excellent illustrations.",
           price: "$$",
           beginner: true,
-          imageUrl: "/placeholder.svg?height=100&width=100&query=Sibley Guide to Birds",
+          imageUrl: "https://www.sibleyguides.com/wp-content/uploads/newBirdcover3.gif?height=100&width=100&query=Sibley Guide to Birds",
         },
         {
           name: "National Geographic Field Guide",
           description: "Detailed guide with range maps and identification tips.",
           price: "$$",
           beginner: true,
-          imageUrl: "/placeholder.svg?height=100&width=100&query=National Geographic Bird Guide",
+          imageUrl: "https://images.natgeomaps.com/PROD_LG_1000px/BK26218354_0_LG.jpg?height=100&width=100&query=National Geographic Bird Guide",
         },
         {
           name: "Peterson Field Guide to Birds",
           description: "Classic guide with arrows pointing to key field marks.",
           price: "$$",
           beginner: true,
-          imageUrl: "/placeholder.svg?height=100&width=100&query=Peterson Bird Guide",
+          imageUrl: "https://m.media-amazon.com/images/I/51CJviNaOsL._SX342_SY445_.jpg?height=100&width=100&query=Peterson Bird Guide",
         },
       ],
     },
@@ -360,7 +360,7 @@ export default function BeginnersGuidePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start space-x-4 p-4 border rounded-lg">
                     <img
-                      src="/placeholder.svg?height=80&width=80&query=spotting scope"
+                      src="https://images.unsplash.com/photo-1725469065847-537973a71806?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=80&width=80&query=spotting scope"
                       alt="Spotting Scope"
                       className="w-16 h-16 object-contain"
                     />
@@ -373,7 +373,7 @@ export default function BeginnersGuidePage() {
                   </div>
                   <div className="flex items-start space-x-4 p-4 border rounded-lg">
                     <img
-                      src="/placeholder.svg?height=80&width=80&query=bird field notebook"
+                      src="https://images.unsplash.com/photo-1663864796948-ea1f01b84ef3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=80&width=80&query=bird field notebook"
                       alt="Field Notebook"
                       className="w-16 h-16 object-contain"
                     />
@@ -386,7 +386,7 @@ export default function BeginnersGuidePage() {
                   </div>
                   <div className="flex items-start space-x-4 p-4 border rounded-lg">
                     <img
-                      src="/placeholder.svg?height=80&width=80&query=binocular harness"
+                      src="https://fhfgear.com/cdn/shop/files/service-model-bino-harness_global_primary.jpg?v=1743616077&width=1300?height=80&width=80&query=binocular harness"
                       alt="Binocular Harness"
                       className="w-16 h-16 object-contain"
                     />
@@ -399,7 +399,7 @@ export default function BeginnersGuidePage() {
                   </div>
                   <div className="flex items-start space-x-4 p-4 border rounded-lg">
                     <img
-                      src="/placeholder.svg?height=80&width=80&query=bird photography camera"
+                      src="https://images.unsplash.com/photo-1624913503273-5f9c4e980dba?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmlrb24lMjBjYW1lcmF8ZW58MHx8MHx8fDA%3D?height=80&width=80&query=bird photography camera"
                       alt="Camera"
                       className="w-16 h-16 object-contain"
                     />
