@@ -32,12 +32,11 @@ export async function POST(request: Request, { params }: { params: { threadId: s
       decodedToken.picture,
     )
     return NextResponse.json(newReply, { status: 201 })
-  } catch (error: any)
-  \
+  } catch (error: any) {
     console.error("Error creating forum reply:", error)
-  if (error.message === "Invalid or expired token.") {
-    return NextResponse.json({ error: error.message }, { status: 403 })
+    if (error.message === "Invalid or expired token.") {
+      return NextResponse.json({ error: error.message }, { status: 403 })
+    }
+    return NextResponse.json({ error: error.message || "Failed to create forum reply" }, { status: 500 })
   }
-  return NextResponse.json({ error: error.message || "Failed to create forum reply" }, { status: 500 })
-}
 }
