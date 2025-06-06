@@ -14,6 +14,7 @@
 firebase-debug.log
 .firebaserc
 .firebase/
+birdwatch-ac63e-firebase-adminsdk-fbsvc-cb9c46f08f.json
 
 # debug
 npm-debug.log*
