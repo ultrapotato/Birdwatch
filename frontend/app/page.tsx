@@ -153,7 +153,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <ArticlesList />
+          <ArticlesList slice={true} />
           <div className="flex justify-center mt-8">
             <Link href="/articles" passHref>
               <Button variant="outline" size="lg">

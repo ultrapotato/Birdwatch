@@ -1,0 +1,131 @@
+import type { BirdSighting, BirdSpecies } from "@/lib/models/bird.models"
+import { auth } from "@/lib/firebase/firebase" // For getting ID token
+
+const API_BASE_URL = "/api" // Assuming Next.js API routes are at /api
+
+async function getAuthHeaders() : Promise<Record<string, string>>{
+  const user = auth.currentUser
+  if (user) {
+    const token = await user.getIdToken()
+    return {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    }
+  }
+  return { "Content-Type": "application/json" }
+}
+
+export const createBirdSighting = async (sightingData: Partial<BirdSighting>): Promise<{ id: string }> => {
+  const headers = await getAuthHeaders()
+  if (!headers.Authorization) throw new Error("User not authenticated")
+
+  const response = await fetch(`${API_BASE_URL}/birds`, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(sightingData),
+  })
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.error || "Failed to create bird sighting")
+  }
+  return response.json()
+}
+
+export const getFeaturedBirds = async (): Promise<BirdSighting[]> => {
+  const response = await fetch(`${API_BASE_URL}/birds/featured`)
+  if (!response.ok) throw new Error("Failed to fetch featured birds")
+  return response.json()
+}
+
+export const getRecentSightings = async (): Promise<BirdSighting[]> => {
+  const response = await fetch(`${API_BASE_URL}/birds/recent`)
+  if (!response.ok) throw new Error("Failed to fetch recent sightings")
+  return response.json()
+}
+
+export const getUserSightings = async (userId: string): Promise<BirdSighting[]> => {
+  // This might need a dedicated endpoint or be part of a user profile endpoint
+  // For now, let's assume an endpoint like /api/users/{userId}/sightings
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/users/${userId}/sightings`, { headers })
+  if (!response.ok) throw new Error("Failed to fetch user sightings")
+  return response.json()
+}
+
+export const deleteSighting = async (userId: string, sightingId: string): Promise<void> => {
+  const headers = await getAuthHeaders()
+  const response = await fetch(`${API_BASE_URL}/users/${userId}/sightings/${sightingId}`, {
+    method: "DELETE",
+    headers,
+  })
+
+  if (!response.ok) {
+
+    throw new Error("Failed to delete sighting")
+  }
+}
+
+
+export const searchBirds = async (searchParams: any): Promise<BirdSighting[]> => {
+  const query = new URLSearchParams(searchParams).toString()
+  console.log(query)
+  const response = await fetch(`${API_BASE_URL}/birds?${query}`)
+  if (!response.ok) throw new Error("Failed to search birds")
+  return response.json()
+}
+
+export const getBirdDetails = async (birdId: string): Promise<BirdSighting | null> => {
+  const response = await fetch(`${API_BASE_URL}/birds/${birdId}`)
+  if (!response.ok) {
+    if (response.status === 404) return null
+    throw new Error("Failed to fetch bird details")
+  }
+  return response.json()
+}
+
+export const getSimilarBirds = async (birdId: string): Promise<BirdSighting[]> => {
+  // Placeholder: This logic should be on the backend, e.g., /api/birds/{birdId}/similar
+  // For now, returning a few recent ones as a mock
+  const response = await fetch(`${API_BASE_URL}/birds/recent?limit=3`)
+  if (!response.ok) throw new Error("Failed to fetch similar birds")
+  return response.json()
+}
+
+// Mock for common birds, ideally this comes from a species list
+export const getCommonBirds = async (): Promise<Partial<BirdSpecies>[]> => {
+  // This should fetch from /api/birds/species?common=true or similar
+  // Mocking for now
+  return [
+    {
+      id: "1",
+      speciesName: "Northern Cardinal",
+      description: "Bright red bird...",
+      habitat: "Woodlands",
+      defaultImageUrl: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      id: "2",
+      speciesName: "American Robin",
+      description: "Gray-brown bird...",
+      habitat: "Lawns",
+      defaultImageUrl: "/placeholder.svg?height=200&width=200",
+    },
+  ]
+}
+
+export const getNearbyBirds = async (lat: number, lon: number, radius: number): Promise<BirdSighting[]> => {
+  const response = await fetch(`${API_BASE_URL}/birds/nearby?lat=${lat}&lon=${lon}&radius=${radius}`)
+  if (!response.ok) throw new Error("Failed to fetch nearby birds")
+  return response.json()
+}
+
+export const getAllBirds = async ({ sortBy = "recent" ,query}: { sortBy?: string, query?:string } = {}): Promise<BirdSighting[]> => {
+  const queryParams = new URLSearchParams()
+  queryParams.set("sort", sortBy)
+  if (query) queryParams.set("query", query)
+  console.log(queryParams)
+
+  const response = await fetch(`${API_BASE_URL}/birds?${queryParams.toString()}`)
+  if (!response.ok) throw new Error("Failed to fetch all birds")
+  return response.json()
+}

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { PlusCircle, MessageCircle, User, Calendar } from "lucide-react"
-import { getForumThreads } from "@/lib/api/forum"
+import { getForumThreads } from "@/lib/frontend-api/forum"
 import { formatDistanceToNow } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 

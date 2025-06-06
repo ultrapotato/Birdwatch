@@ -4,9 +4,10 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Calendar } from "lucide-react"
+import { BirdSighting } from "@/lib/models/bird.models"
 
 interface BirdListItemProps {
-  bird: any
+  bird: BirdSighting
 }
 
 export default function BirdListItem({ bird }: BirdListItemProps) {
@@ -16,15 +17,15 @@ export default function BirdListItem({ bird }: BirdListItemProps) {
         <div className="flex flex-col sm:flex-row">
           <div className="sm:w-48 h-48 sm:h-auto">
             <img
-              src={bird.imageUrl || `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(bird.species)}`}
-              alt={bird.species}
+              src={bird.images[0]?.url || `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(bird.speciesName)}`}
+              alt={bird.speciesName}
               className="w-full h-full object-cover"
             />
           </div>
           <div className="flex flex-col p-4 flex-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <Link href={`/birds/${bird.id}`} className="hover:underline">
-                <h3 className="font-bold text-lg">{bird.species}</h3>
+                <h3 className="font-bold text-lg">{bird.speciesName}</h3>
               </Link>
               <div className="flex items-center text-sm text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5 mr-1" />

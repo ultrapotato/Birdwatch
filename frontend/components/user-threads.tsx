@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, SetStateAction } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
-import { getUserThreads } from "@/lib/api/forum"
 import { MessageCircle, Edit, Trash2 } from "lucide-react"
 
 interface UserThreadsProps {
@@ -20,7 +19,8 @@ export default function UserThreads({ userId }: UserThreadsProps) {
   useEffect(() => {
     const fetchThreads = async () => {
       try {
-        const data = await getUserThreads(userId)
+        const data: SetStateAction<any[]> = []
+        // await getUserThreads(userId)
         setThreads(data)
       } catch (error) {
         console.error("Error fetching user threads:", error)

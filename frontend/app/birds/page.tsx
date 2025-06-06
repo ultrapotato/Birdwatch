@@ -7,41 +7,65 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Filter, Grid3X3, List, MapPin, Search } from "lucide-react"
-import BirdCard from "@/components/bird-card"
 import BirdListItem from "@/components/bird-list-item"
 import { useEffect, useState } from "react"
-import { BirdEntry, getAllBirds } from "@/lib/api/birds"
+import { getAllBirds } from "@/lib/frontend-api/birds"
+import type { BirdSighting } from "@/lib/models/bird.models"
+import { BirdSightingCard } from "@/components/bird-sighting-card"
 
 export default function BirdsPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [birds, setBirds] = useState<BirdEntry[]>([])
+  const [birds, setBirds] = useState<BirdSighting[]>([])
+  const [sortBy, setSortBy] = useState("recent");
   const [loading, setLoading] = useState(true)
-
-  // Hardcoded birds data for demonstration
 
   useEffect(() => {
     const fetchBirds = async () => {
       try {
-        const aBirds = await getAllBirds()
+        const aBirds = await getAllBirds({ sortBy, query: searchQuery })
         setBirds(aBirds)
       } catch (error) {
         console.error("Error fetching alerts:", error)
       } finally {
         setLoading(false)
       }
-    }
-
-    fetchBirds()
-  })
-
-
+    };
+    const timeout = setTimeout(() => {
+      fetchBirds();
+    }, 300);
 
 
-  const filteredBirds = birds.filter((bird) =>
-    bird.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    bird.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    bird.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-  )
+  return () => clearTimeout(timeout);
+  }, [sortBy, searchQuery])
+
+  function SortDropdown() {
+    const handleSortChange = async (value: string) => {
+      setSortBy(value);
+    };
+
+
+    return (
+      <Select defaultValue="recent" onValueChange={handleSortChange}>
+        <SelectTrigger className="w-[160px]">
+          <SelectValue placeholder="Sort by" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="recent">Most Recent</SelectItem>
+          <SelectItem value="popular">Most Popular</SelectItem>
+          <SelectItem value="rare">Rarity</SelectItem>
+          <SelectItem value="az">A-Z</SelectItem>
+        </SelectContent>
+      </Select>
+    );
+  }
+
+  const filteredBirds = birds
+    // .filter(
+    //   (bird) =>
+    //     bird.speciesName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //     bird.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //     bird.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase())),
+    // )
 
   return (
     <div className="container py-10">
@@ -55,10 +79,13 @@ export default function BirdsPage() {
           <div className="flex-1 max-w-md">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search"
+              <Input
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search birds..." className="pl-8" />
+                placeholder="Search birds..."
+                className="pl-8"
+              />
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -66,17 +93,7 @@ export default function BirdsPage() {
               <Filter className="mr-2 h-4 w-4" />
               Filter
             </Button>
-            <Select defaultValue="recent">
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="recent">Most Recent</SelectItem>
-                <SelectItem value="popular">Most Popular</SelectItem>
-                <SelectItem value="rare">Rarity</SelectItem>
-                <SelectItem value="az">A-Z</SelectItem>
-              </SelectContent>
-            </Select>
+            {SortDropdown()}
           </div>
         </div>
 
@@ -104,7 +121,7 @@ export default function BirdsPage() {
           <TabsContent value="grid" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredBirds.map((bird) => (
-                <BirdCard key={bird.id} bird={bird} />
+                <BirdSightingCard key={bird.id} bird={bird} />
               ))}
             </div>
             <div className="flex justify-center">
@@ -128,7 +145,7 @@ export default function BirdsPage() {
               <CardContent className="p-0">
                 <div className="aspect-[16/9] relative bg-gray-100 rounded-md overflow-hidden">
                   <img
-                    src="/placeholder.svg?height=600&width=1200&query=bird sightings map with pins"
+                    src="/placeholder.svg?height=600&width=1200"
                     alt="Bird sightings map"
                     className="w-full h-full object-cover"
                   />
@@ -144,7 +161,7 @@ export default function BirdsPage() {
                   <MapPin className="h-5 w-5 text-green-600 mt-0.5" />
                   <div>
                     <Link href={`/birds/${bird.id}`} className="font-medium hover:underline">
-                      {bird.species}
+                      {bird.speciesName}
                     </Link>
                     <p className="text-sm text-muted-foreground">{bird.location}</p>
                   </div>

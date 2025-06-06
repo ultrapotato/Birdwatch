@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
-import { getRecentSightings } from "@/lib/api/birds"
+import { getRecentSightings } from "@/lib/frontend-api/birds"
 
 export default function RecentSightings() {
   const [sightings, setSightings] = useState<any[]>([])
@@ -45,21 +45,21 @@ export default function RecentSightings() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-      {sightings.map((sighting) => (
+      {sightings.slice(0,3).map((sighting) => (
         <Link href={`/birds/${sighting.id}`} key={sighting.id} passHref>
           <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col">
             <div className="relative h-40 overflow-hidden">
               <img
                 src={
-                  sighting.imageUrl ||
-                  `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(sighting.species)}`
+                  sighting.images[0]?.url ||
+                  `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(sighting.speciesName) || "/placeholder.svg"}`
                 }
-                alt={sighting.species}
+                alt={sighting.speciesName}
                 className="w-full h-full object-cover"
               />
             </div>
             <CardContent className="p-4 flex-1">
-              <h3 className="font-bold text-lg mb-1">{sighting.species}</h3>
+              <h3 className="font-bold text-lg mb-1">{sighting.speciesName}</h3>
               <p className="text-sm text-muted-foreground mb-2">{sighting.location}</p>
               <div className="flex items-center mt-2">
                 <Avatar className="h-6 w-6 mr-2">

@@ -1,8 +1,8 @@
 "use client"
 
-import type React from "react"
+import { useState } from "react"
+import { Bell, Plus, Trash2 } from "lucide-react"
 
-import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,101 +10,62 @@ import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Bell, Plus, Trash2 } from "lucide-react"
-import { getUserAlerts, createAlert, deleteAlert } from "@/lib/api/alerts"
+import * as frontendApiAlerts from "@/lib/frontend-api/alerts"
 import { useToast } from "@/hooks/use-toast"
-import { useFirebase } from "@/lib/firebase/firebase-provider"
+import { useUserAlerts } from "@/hooks/use-user-alerts"
+import type { UserAlert } from "@/lib/models/alert.models"
 
 export default function AlertsPage() {
-  // Hardcoded user for demonstration
-  const { user, userLoading } = useFirebase()
+  const {
+    alerts,
+    user,
+    loading,
+    userLoading,
+    deleteAlert,
+    toggleAlertActive,
+    addAlertToList,
+  } = useUserAlerts()
 
-  const [loading, setLoading] = useState(true)
-  const [alerts, setAlerts] = useState<any[]>([])
-  const [newAlertSpecies, setNewAlertSpecies] = useState("")
-  const [newAlertLocation, setNewAlertLocation] = useState("")
-  const [newAlertNotificationType, setNewAlertNotificationType] = useState("email")
-  const [isCreatingAlert, setIsCreatingAlert] = useState(false)
   const { toast } = useToast()
 
-  useEffect(() => {
-    if (!user) return
-
-    const fetchAlerts = async () => {
-      try {
-        const userAlerts = await getUserAlerts(user.uid)
-        setAlerts(userAlerts)
-      } catch (error) {
-        console.error("Error fetching alerts:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchAlerts()
-  }, [user?.uid])
+  const [newAlertSpecies, setNewAlertSpecies] = useState("")
+  const [newAlertLocation, setNewAlertLocation] = useState("")
+  const [newAlertNotificationType, setNewAlertNotificationType] = useState<UserAlert["notificationType"]>("email")
+  const [isCreatingAlert, setIsCreatingAlert] = useState(false)
 
   const handleCreateAlert = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!user) {
+      toast({ title: "Not Authenticated", description: "Please sign in to create alerts.", variant: "destructive" })
+      return
+    }
     setIsCreatingAlert(true)
 
     try {
-      if (!user) return
-      const newAlert = {
-        userId: user.uid,
-        species: newAlertSpecies,
-        location: newAlertLocation,
+      const alertDataToCreate: Partial<Omit<UserAlert, "id" | "userId" | "createdAt">> = {
+        speciesName: newAlertSpecies || undefined,
+        location: newAlertLocation || undefined,
         notificationType: newAlertNotificationType,
         active: true,
-        createdAt: new Date().toISOString(),
       }
 
-      const result = await createAlert(newAlert)
+      const newAlert = await frontendApiAlerts.createAlert(alertDataToCreate)
+      addAlertToList(newAlert)
 
-      // Add to local state
-      setAlerts([...alerts, { ...newAlert, id: result.id }])
-
-      toast({
-        title: "Alert created",
-        description: "You will be notified when this bird is spotted.",
-      })
+      toast({ title: "Alert created", description: "You will be notified when this bird is spotted." })
 
       setNewAlertSpecies("")
       setNewAlertLocation("")
       setNewAlertNotificationType("email")
     } catch (error: any) {
-      toast({
-        title: "Error creating alert",
-        description: error.message || "Failed to create alert",
-        variant: "destructive",
-      })
+      toast({ title: "Error creating alert", description: error.message || "Failed to create alert", variant: "destructive" })
     } finally {
       setIsCreatingAlert(false)
     }
   }
 
-  const handleDeleteAlert = async (alertId: string) => {
-    try {
-      await deleteAlert(alertId)
-
-      // Update local state
-      setAlerts(alerts.filter((alert) => alert.id !== alertId))
-
-      toast({
-        title: "Alert deleted",
-        description: "The alert has been removed from your account.",
-      })
-    } catch (error: any) {
-      toast({
-        title: "Error deleting alert",
-        description: error.message || "Failed to delete alert",
-        variant: "destructive",
-      })
-    }
-  }
-
-  if (userLoading) {
-    return <div>Loading user info...</div>
+  if (userLoading || (loading && user)) {
+    return <div className="container py-10 text-center">Loading your alerts...</div>
   }
 
   return (
@@ -121,13 +82,9 @@ export default function AlertsPage() {
 
         {!user ? (
           <div className="text-center py-10 text-muted-foreground">
-            Please {" "}
-            <a href="/login" className="text-green-600 hover:underline">
-              sign in
-            </a>{" "} to manage your alerts.
+            Please <a href="/login" className="text-green-600 hover:underline">sign in</a> to manage your alerts.
           </div>
         ) : (
-
           <Tabs defaultValue="myAlerts" className="space-y-6">
             <TabsList>
               <TabsTrigger value="myAlerts">My Alerts</TabsTrigger>
@@ -135,10 +92,7 @@ export default function AlertsPage() {
             </TabsList>
 
             <TabsContent value="myAlerts" className="space-y-4">
-
-              {loading ? (
-                <div className="text-center py-4">Loading your alerts...</div>
-              ) : alerts.length === 0 ? (
+              {alerts.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   You don&apos;t have any alerts set up yet. Create one to get started.
                 </div>
@@ -148,25 +102,30 @@ export default function AlertsPage() {
                     <Card key={alert.id}>
                       <CardHeader className="pb-2">
                         <div className="flex justify-between items-center">
-                          <CardTitle>{alert.species || "Any bird"}</CardTitle>
-                          <Button variant="ghost" size="icon" onClick={() => handleDeleteAlert(alert.id)}>
+                          <CardTitle>{alert.speciesName || "Any bird"}</CardTitle>
+                          <Button variant="ghost" size="icon" onClick={() => deleteAlert(alert.id!)}>
                             <Trash2 className="h-4 w-4 text-red-500" />
                           </Button>
                         </div>
-                        <CardDescription>
-                          {alert.location ? `Location: ${alert.location}` : "Any location"}
-                        </CardDescription>
+                        <CardDescription>{alert.location ? `Location: ${alert.location}` : "Any location"}</CardDescription>
                       </CardHeader>
                       <CardContent className="pb-2">
                         <div className="flex items-center justify-between">
                           <div className="text-sm">
-                            Notification: {alert.notificationType === "email" ? "Email" : "Push notification"}
+                            Notification:{" "}
+                            {alert.notificationType === "email"
+                              ? "Email"
+                              : alert.notificationType === "push"
+                                ? "Push notification"
+                                : "In-app"}
                           </div>
                           <div className="flex items-center space-x-2">
-                            <Label htmlFor={`active-${alert.id}`} className="text-sm">
-                              Active
-                            </Label>
-                            <Switch id={`active-${alert.id}`} checked={alert.active} />
+                            <Label htmlFor={`active-${alert.id}`} className="text-sm">Active</Label>
+                            <Switch
+                              id={`active-${alert.id}`}
+                              checked={alert.active}
+                              onCheckedChange={() => toggleAlertActive(alert.id!, alert.active)}
+                            />
                           </div>
                         </div>
                       </CardContent>
@@ -193,7 +152,6 @@ export default function AlertsPage() {
                         onChange={(e) => setNewAlertSpecies(e.target.value)}
                       />
                     </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="location">Location</Label>
                       <Input
@@ -203,30 +161,26 @@ export default function AlertsPage() {
                         onChange={(e) => setNewAlertLocation(e.target.value)}
                       />
                     </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="notificationType">Notification Type</Label>
-                      <Select value={newAlertNotificationType} onValueChange={setNewAlertNotificationType}>
+                      <Select
+                        value={newAlertNotificationType}
+                        onValueChange={(value) => setNewAlertNotificationType(value as UserAlert["notificationType"])}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select notification type" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="email">Email</SelectItem>
                           <SelectItem value="push">Push Notification</SelectItem>
+                          <SelectItem value="in-app">In-app Notification</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </CardContent>
                   <CardFooter>
                     <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isCreatingAlert}>
-                      {isCreatingAlert ? (
-                        "Creating Alert..."
-                      ) : (
-                        <>
-                          <Plus className="mr-2 h-4 w-4" />
-                          Create Alert
-                        </>
-                      )}
+                      {isCreatingAlert ? "Creating Alert..." : (<><Plus className="mr-2 h-4 w-4" /> Create Alert</>)}
                     </Button>
                   </CardFooter>
                 </form>

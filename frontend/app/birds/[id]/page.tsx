@@ -4,39 +4,37 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
-import { formatDistanceToNow } from "date-fns"
-import { MapPin, Calendar, Clock, User, MessageCircle, Share2, Bookmark, ThumbsUp, Send } from "lucide-react"
+import { MapPin, Calendar, Clock, User, MessageCircle, Share2, Bookmark, ThumbsUp, Send, Router } from "lucide-react"
 import ImageGallery from "@/components/image-gallery"
-import BirdCard from "@/components/bird-card"
-import { Bird, getBirdDetails, getSimilarBirds } from "@/lib/api/birds"
+import { getBirdDetails, getSimilarBirds } from "@/lib/frontend-api/birds"
+import type { BirdSighting } from "@/lib/models/bird.models"
 
 export default function BirdDetailPage() {
   const params = useParams()
-  const birdId = params.id
+
+  const birdId = Array.isArray(params.id) ? params.id[0] : params.id ?? '';
+
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("details")
   const [comment, setComment] = useState("")
-  const [bird, setBird] = useState<Bird | null>()
-  const [similarBirds, setSimilarBirds] = useState<any[]>([])
-
-
+  const [bird, setBird] = useState<BirdSighting | null>()
+  const [similarBirds, setSimilarBirds] = useState<BirdSighting[]>([])
 
   useEffect(() => {
     const fetchBird = async () => {
       try {
-        const newBird = await getBirdDetails("birdId")
+        const newBird = await getBirdDetails(birdId)
         setBird(newBird)
 
-        const newSimilarBirds = await getSimilarBirds("birdId")
+        const newSimilarBirds = await getSimilarBirds(birdId)
         setSimilarBirds(newSimilarBirds)
-
       } catch (error) {
         console.error("Error fetching alerts:", error)
       } finally {
@@ -67,10 +65,10 @@ export default function BirdDetailPage() {
               Birds
             </Link>
             <span className="text-muted-foreground">/</span>
-            <span>{bird?.species}</span>
+            <span>{bird?.speciesName}</span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">{bird?.species}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{bird?.speciesName}</h1>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm">
                 <Share2 className="mr-2 h-4 w-4" />
@@ -100,7 +98,9 @@ export default function BirdDetailPage() {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
               <TabsList className="w-full justify-start">
                 <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="comments">Comments ({bird?.comments.length})</TabsTrigger>
+                <TabsTrigger value="comments">Comments 
+                  {/* ({bird?.comments.length}) */}
+                  </TabsTrigger>
                 <TabsTrigger value="similar">Similar Birds</TabsTrigger>
               </TabsList>
 
@@ -219,7 +219,7 @@ export default function BirdDetailPage() {
                     </form>
 
                     <div className="space-y-4 pt-4">
-                      {bird?.comments.map((comment: any) => (
+                      {/* {bird?.comments.map((comment: any) => (
                         <div key={comment.id} className="flex space-x-4">
                           <Avatar>
                             <AvatarImage src={comment.userAvatar || "/placeholder.svg"} />
@@ -230,7 +230,7 @@ export default function BirdDetailPage() {
                               <div className="flex items-center">
                                 <span className="font-medium">{comment.userName}</span>
                                 <span className="text-xs text-muted-foreground ml-2">
-                                  {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                                  {comment.createdAt}
                                 </span>
                               </div>
                               <Button variant="ghost" size="sm">
@@ -241,7 +241,8 @@ export default function BirdDetailPage() {
                             <p className="text-sm">{comment.text}</p>
                           </div>
                         </div>
-                      ))}
+                      ))} */}
+                      comments go here
                     </div>
                   </CardContent>
                 </Card>
@@ -251,12 +252,13 @@ export default function BirdDetailPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Similar Birds</CardTitle>
-                    <CardDescription>Birds that are similar to {bird?.species}</CardDescription>
+                    <CardDescription>Birds that are similar to {bird?.speciesName}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {similarBirds.map((similarBird) => (
-                        <BirdCard key={similarBird.id} bird={similarBird} />
+                        // <BirdSightingCard key={similarBird.id} bird={similarBird} />
+                        <p>coming!</p>
                       ))}
                     </div>
                   </CardContent>
@@ -280,7 +282,7 @@ export default function BirdDetailPage() {
                     <p className="font-medium">{bird?.userName}</p>
                     <p className="text-sm text-muted-foreground">
                       {bird?.createdAt ? (
-                        <>Reported {formatDistanceToNow(new Date(bird.createdAt), { addSuffix: true })}</>
+                        <>Reported {bird.createdAt}</>
                       ) : (
                         <>Reported just now</>
                       )}
@@ -288,7 +290,7 @@ export default function BirdDetailPage() {
                   </div>
                 </div>
                 <div className="mt-4 flex justify-center">
-                  <Button  variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full">
                     <User className="mr-2 h-4 w-4" />
                     View Profile
                   </Button>
@@ -304,17 +306,17 @@ export default function BirdDetailPage() {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div className="space-y-1">
                     <ThumbsUp className="h-5 w-5 mx-auto text-green-600" />
-                    <p className="text-2xl font-bold">{bird?.likes}</p>
+                    {/* <p className="text-2xl font-bold">{bird?.likes}</p> */}
                     <p className="text-xs text-muted-foreground">Likes</p>
                   </div>
                   <div className="space-y-1">
                     <MessageCircle className="h-5 w-5 mx-auto text-green-600" />
-                    <p className="text-2xl font-bold">{bird?.comments.length}</p>
+                    {/* <p className="text-2xl font-bold">{bird?.comments.length}</p> */}
                     <p className="text-xs text-muted-foreground">Comments</p>
                   </div>
                   <div className="space-y-1">
                     <Bookmark className="h-5 w-5 mx-auto text-green-600" />
-                    <p className="text-2xl font-bold">{bird?.bookmarks}</p>
+                    {/* <p className="text-2xl font-bold">{bird?.bookmarks}</p> */}
                     <p className="text-xs text-muted-foreground">Saves</p>
                   </div>
                 </div>
@@ -343,7 +345,7 @@ export default function BirdDetailPage() {
                   <p className="text-sm">Eastern and Central United States, Mexico</p>
                 </div>
                 <div className="mt-4">
-                  <Link href={`/birds/guide/${bird?.species.toLowerCase().replace(/\s+/g, "-")}`} passHref>
+                  <Link href={`/birds/guide/${bird?.speciesName.toLowerCase().replace(/\s+/g, "-")}`} passHref>
                     <Button variant="outline" className="w-full">
                       View Full Bird Guide
                     </Button>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
-import { getUserSightings } from "@/lib/api/birds"
+import { deleteSighting, getUserSightings } from "@/lib/frontend-api/birds"
 import { Edit, Trash2 } from "lucide-react"
 
 interface UserSightingsProps {
@@ -31,6 +31,18 @@ export default function UserSightings({ userId }: UserSightingsProps) {
 
     fetchSightings()
   }, [userId])
+
+  const handleDelete = async (sightingId: string) => {
+    if (!confirm("Are you sure you want to delete this sighting?")) return
+    try {
+      await deleteSighting(userId, sightingId)
+      setSightings((prev) => prev.filter((s) => s.id !== sightingId))
+    } catch (error) {
+      console.error("Failed to delete sighting:", error)
+      // Optionally show toast or error
+    }
+  }
+
 
   if (loading) {
     return <div className="text-center py-4">Loading your sightings...</div>
@@ -60,7 +72,7 @@ export default function UserSightings({ userId }: UserSightingsProps) {
                     <Edit className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500">
+                <Button variant="ghost" size="icon" onClick={() => { handleDelete(sighting.id)}} className="h-8 w-8 text-red-500">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

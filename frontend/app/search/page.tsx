@@ -11,10 +11,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Info } from "lucide-react"
-import { searchBirds } from "@/lib/api/birds"
+import { searchBirds } from "@/lib/frontend-api/birds"
 import { parseSearchQuery } from "@/lib/search-parser"
-import BirdCard from "@/components/bird-card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { BirdSightingCard } from "@/components/bird-sighting-card"
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -314,7 +314,7 @@ export default function SearchPage() {
           ) : searchResults.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {searchResults.map((bird: any) => (
-                <BirdCard key={bird.id} bird={bird} />
+                <BirdSightingCard key={bird.id} bird={bird} />
               ))}
             </div>
           ) : (

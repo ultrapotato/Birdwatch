@@ -1,4 +1,3 @@
-// Advanced search parser for bird sightings
 export interface SearchQuery {
   terms: string[]
   exactPhrases: string[]

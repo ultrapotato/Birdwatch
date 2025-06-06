@@ -5,9 +5,9 @@ import Link from "next/link"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
-import { getArticles } from "@/lib/api/articles"
+import { getArticles } from "@/lib/frontend-api/articles"
 
-export default function ArticlesList({searchQuery = ""}) {
+export default function ArticlesList({ searchQuery = "" , slice = false}) {
   const [articles, setArticles] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -42,16 +42,15 @@ export default function ArticlesList({searchQuery = ""}) {
     )
   }
 
-    const filteredArticles = articles.filter((article) =>
+  const filteredArticles = articles.filter((article) =>
     article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    article.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase())) || 
-    article.author.toLowerCase().includes(searchQuery.toLowerCase()),)
+    article.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    article.authorName.toLowerCase().includes(searchQuery.toLowerCase()),)
 
-
-
+  console.log(filteredArticles)
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-      {filteredArticles.map((article) => (
+      {(slice? filteredArticles.slice(0,3):filteredArticles).map((article) => (
         <Link href={`/articles/${article.id}`} key={article.id} passHref>
           <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col">
             <div className="relative h-40 overflow-hidden">
@@ -66,7 +65,7 @@ export default function ArticlesList({searchQuery = ""}) {
             <CardContent className="p-4 flex-1">
               <h3 className="font-bold text-lg mb-1">{article.title}</h3>
               <p className="text-sm text-muted-foreground mb-2">
-                {article.author} • {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}
+                {article.authorName} • {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}
               </p>
               <p className="text-sm line-clamp-3">{article.excerpt}</p>
             </CardContent>

@@ -13,9 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast"
 import ImageUpload from "@/components/image-upload"
 import { useFirebase } from "@/lib/firebase/firebase-provider"
+import { createBirdSighting } from "@/lib/frontend-api/birds"
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function NewBirdPage() {
-  // Hardcoded user for demonstration
   const { user, userLoading } = useFirebase()
 
   const [submitting, setSubmitting] = useState(false)
@@ -33,6 +34,7 @@ export default function NewBirdPage() {
     taxonomy: "",
     flightPattern: "",
     tags: "",
+    
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -47,19 +49,51 @@ export default function NewBirdPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!user){
-      toast({title:"Please sign in",
+    if (!user) {
+      toast({
+        title: "Please sign in",
         description: "You have to be signed in to report a sighting.",
         variant: "destructive",
       })
       return
     }
 
+    const storage = getStorage();
+    console.log("got here!")
+
+    const uploadedImages = await Promise.all(
+      images.map(async (image, index) => {
+        const storageRef = ref(storage, `sightings/${user.uid}/${Date.now()}-${image.name}`);
+        await uploadBytes(storageRef, image);
+        const downloadURL = await getDownloadURL(storageRef);
+
+        return {
+          id: `img-${index}`,
+          url: downloadURL,
+          caption: image.name,
+        };
+      })
+    );
+
+
     setSubmitting(true)
 
+    const sightingPayload = {
+      speciesName: formData.species,
+      location: formData.location,
+      date: formData.date,
+      time: formData.time,
+      description: formData.description,
+      taxonomy: formData.taxonomy,
+      flightPattern: formData.flightPattern,
+      tags: formData.tags.split(" ").filter((tag) => tag.trim() !== ""),
+      images: uploadedImages,
+      // Placeholder URL, actual upload needed
+      // coordinates: {} // TODO: Add coordinates if available
+    }
+
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await createBirdSighting(sightingPayload)
 
       toast({
         title: "Sighting reported",

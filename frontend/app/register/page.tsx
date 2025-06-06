@@ -25,7 +25,7 @@ export default function RegisterPage() {
   const { user, userLoading } = useFirebase()
   useEffect(() => {
     if (!userLoading && user) {
-      router.push("/dashboard")
+      router.push("/beginners")
     }
   }, [user, userLoading, router])
 

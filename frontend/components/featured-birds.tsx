@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { getFeaturedBirds } from "@/lib/api/birds"
+import { getFeaturedBirds } from "@/lib/frontend-api/birds"
 
 export default function FeaturedBirds() {
   const [birds, setBirds] = useState<any[]>([])
@@ -48,13 +48,13 @@ export default function FeaturedBirds() {
           <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col">
             <div className="relative h-48 overflow-hidden">
               <img
-                src={bird.imageUrl || `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(bird.species)}`}
-                alt={bird.species}
+                src={bird.images[0].url || `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(bird.speciesName)}`}
+                alt={bird.speciesName}
                 className="w-full h-full object-cover"
               />
             </div>
             <CardContent className="p-4 flex-1">
-              <h3 className="font-bold text-lg mb-1">{bird.species}</h3>
+              <h3 className="font-bold text-lg mb-1">{bird.speciesName}</h3>
               <p className="text-sm text-muted-foreground mb-2">{bird.location}</p>
               <p className="text-sm line-clamp-3">{bird.description}</p>
             </CardContent>
