@@ -61,7 +61,7 @@ export default function Navigation() {
   const navItems = [
     user ? { name: "Dashboard", href: "/dashboard" } : { name: "Home", href: "/" },
     { name: "Birds", href: "/birds" },
-    { name: "Search", href: "/search", icon: <Search className="h-4 w-4 mr-2" /> },
+    // { name: "Search", href: "/search", icon: <Search className="h-4 w-4 mr-2" /> },
     { name: "Forum", href: "/forum", icon: <MessageCircle className="h-4 w-4 mr-2" /> },
     { name: "Chat", href: "/chat" },
     { name: "Articles", href: "/articles" },

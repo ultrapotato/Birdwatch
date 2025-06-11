@@ -19,13 +19,12 @@ Birdwatch is a website aimed at providing information about birds encountered du
 - Notifications and alerts for endangered species sightings
 - Mobile app version with camera integration for on-the-go identification
 
-🌐 Deployment
+## 🌐 Deployment
 The website is deployed and accessible at:
-
 👉 birdwatch-delta.vercel.app
 
-🤝 Contributing
+## 🤝 Contributing
 Contributions are welcome! Feel free to fork the repository, make improvements, and submit pull requests.
 
-📄 License
+## 📄 License
 This project is licensed under the MIT License.

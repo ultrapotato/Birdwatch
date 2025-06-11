@@ -13,17 +13,20 @@ import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { MapPin, Calendar, Clock, User, MessageCircle, Share2, Bookmark, ThumbsUp, Send, Router } from "lucide-react"
 import ImageGallery from "@/components/image-gallery"
-import { getBirdDetails, getSimilarBirds } from "@/lib/frontend-api/birds"
-import type { BirdSighting } from "@/lib/models/bird.models"
+import { addBirdSightingComment, getBirdDetails, getBirdSightingComments, getSimilarBirds } from "@/lib/frontend-api/birds"
+import type { BirdSighting, BirdSightingComment } from "@/lib/models/bird.models"
+import { useFirebase } from "@/lib/firebase/firebase-provider"
+import { BirdSightingCard } from "@/components/bird-sighting-card"
 
 export default function BirdDetailPage() {
   const params = useParams()
-
+  const { user, userLoading } = useFirebase()
   const birdId = Array.isArray(params.id) ? params.id[0] : params.id ?? '';
 
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("details")
   const [comment, setComment] = useState("")
+  const [comments, setComments] = useState<BirdSightingComment[]>([])
   const [bird, setBird] = useState<BirdSighting | null>()
   const [similarBirds, setSimilarBirds] = useState<BirdSighting[]>([])
 
@@ -43,11 +46,36 @@ export default function BirdDetailPage() {
     }
 
     fetchBird()
+
+    const fetchComments = async () => {
+      if (birdId) {
+        const c = await getBirdSightingComments(birdId)
+        setComments(c)
+      }
+    }
+    fetchComments()
+
   }, [birdId])
 
-  const handleSubmitComment = (e: React.FormEvent) => {
+  const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!comment.trim()) return
+    if (!comment.trim()
+      || !user
+    ) return
+
+    try {
+      const newComment = await addBirdSightingComment(birdId, {
+        userId: user.uid,
+        userName: user.displayName ?? "",
+        userAvatar: "",
+        text: comment.trim(),
+      })
+      setComments((prev) => [...prev, newComment])
+      setComment("")
+    } catch (err) {
+      console.error("Error submitting comment:", err)
+    }
+
 
     // In a real app, this would send the comment to the server
     console.log("Submitting comment:", comment)
@@ -98,9 +126,9 @@ export default function BirdDetailPage() {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
               <TabsList className="w-full justify-start">
                 <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="comments">Comments 
-                  {/* ({bird?.comments.length}) */}
-                  </TabsTrigger>
+                <TabsTrigger value="comments">Comments
+                  ({comments.length})
+                </TabsTrigger>
                 <TabsTrigger value="similar">Similar Birds</TabsTrigger>
               </TabsList>
 
@@ -204,22 +232,29 @@ export default function BirdDetailPage() {
                     <CardDescription>Join the discussion about this sighting</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <form onSubmit={handleSubmitComment} className="space-y-4">
-                      <Textarea
-                        placeholder="Add a comment..."
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                      />
-                      <div className="flex justify-end">
-                        <Button type="submit" disabled={!comment.trim()}>
-                          <Send className="mr-2 h-4 w-4" />
-                          Post Comment
-                        </Button>
+                    {user ? (
+                      <form onSubmit={handleSubmitComment} className="space-y-4">
+                        <Textarea
+                          placeholder="Add a comment..."
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                        />
+                        <div className="flex justify-end">
+                          <Button type="submit" disabled={!comment.trim()}>
+                            <Send className="mr-2 h-4 w-4" />
+                            Post Comment
+                          </Button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="text-sm text-muted-foreground italic">
+                        You must be logged in to post a comment.
                       </div>
-                    </form>
+                    )}
+
 
                     <div className="space-y-4 pt-4">
-                      {/* {bird?.comments.map((comment: any) => (
+                      {comments.map((comment) => (
                         <div key={comment.id} className="flex space-x-4">
                           <Avatar>
                             <AvatarImage src={comment.userAvatar || "/placeholder.svg"} />
@@ -241,8 +276,7 @@ export default function BirdDetailPage() {
                             <p className="text-sm">{comment.text}</p>
                           </div>
                         </div>
-                      ))} */}
-                      comments go here
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -257,8 +291,8 @@ export default function BirdDetailPage() {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {similarBirds.map((similarBird) => (
-                        // <BirdSightingCard key={similarBird.id} bird={similarBird} />
-                        <p>coming!</p>
+                        <BirdSightingCard key={similarBird.id} bird={similarBird} />
+                        // <p>coming!{similarBirds.length</p>
                       ))}
                     </div>
                   </CardContent>
@@ -282,7 +316,7 @@ export default function BirdDetailPage() {
                     <p className="font-medium">{bird?.userName}</p>
                     <p className="text-sm text-muted-foreground">
                       {bird?.createdAt ? (
-                        <>Reported {bird.createdAt}</>
+                        <>Reported {(new Date(bird.createdAt)).toLocaleString()}</>
                       ) : (
                         <>Reported just now</>
                       )}

@@ -17,8 +17,6 @@ export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([])
   const [searchQuery, setSearchQuery] = useState("")
 
-  const { toast } = useToast()
-
   useEffect(() => {
     const fetchArticles = async () => {
       try {

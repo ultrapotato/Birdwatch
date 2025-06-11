@@ -9,14 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Send } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useFirebase } from "@/lib/firebase/firebase-provider"
 
 export default function ChatPage() {
   // Hardcoded user for demonstration
-  const [user] = useState({
-    uid: "user123",
-    displayName: "Bird Enthusiast",
-    photoURL: "/placeholder.svg?height=40&width=40&query=user profile",
-  })
+  const { user, userLoading } = useFirebase()
+
 
   const [messages, setMessages] = useState<any[]>([
     {
@@ -57,6 +55,12 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
+  if (!user) return (
+    <div className="text-center py-10 text-muted-foreground">
+      Please
+      <a href="/login" className="text-green-600 hover:underline"> sign in </a>
+      to chat.</div>)
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -85,6 +89,7 @@ export default function ChatPage() {
     }
   }
 
+
   return (
     <div className="container py-10">
       <div className="mx-auto max-w-4xl">
@@ -103,9 +108,8 @@ export default function ChatPage() {
                     <AvatarFallback>{message.displayName?.charAt(0) || "U"}</AvatarFallback>
                   </Avatar>
                   <div
-                    className={`rounded-lg px-4 py-2 ${
-                      message.userId === user.uid ? "bg-green-600 text-white" : "bg-gray-100"
-                    }`}
+                    className={`rounded-lg px-4 py-2 ${message.userId === user.uid ? "bg-green-600 text-white" : "bg-gray-100"
+                      }`}
                   >
                     <div className="text-xs mb-1">{message.displayName}</div>
                     <div>{message.text}</div>

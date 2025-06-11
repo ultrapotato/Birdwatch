@@ -8,13 +8,14 @@ import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
 import { deleteSighting, getUserSightings } from "@/lib/frontend-api/birds"
 import { Edit, Trash2 } from "lucide-react"
+import { BirdSighting } from "@/lib/models/bird.models"
 
 interface UserSightingsProps {
   userId: string
 }
 
 export default function UserSightings({ userId }: UserSightingsProps) {
-  const [sightings, setSightings] = useState<any[]>([])
+  const [sightings, setSightings] = useState<BirdSighting[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -65,14 +66,18 @@ export default function UserSightings({ userId }: UserSightingsProps) {
         <Card key={sighting.id}>
           <CardHeader className="pb-2">
             <div className="flex justify-between items-start">
-              <CardTitle className="text-lg">{sighting.species}</CardTitle>
+              <CardTitle className="text-lg">
+                <Link href={`/birds/${sighting.id}`} className="hover:underline text-green-700">
+                  {sighting.speciesName}
+                </Link>
+              </CardTitle>
               <div className="flex space-x-1">
                 <Link href={`/birds/edit/${sighting.id}`} passHref>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Edit className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={() => { handleDelete(sighting.id)}} className="h-8 w-8 text-red-500">
+                <Button variant="ghost" size="icon" onClick={() => { handleDelete(sighting.id ?? "") }} className="h-8 w-8 text-red-500">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

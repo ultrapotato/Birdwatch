@@ -38,11 +38,11 @@ export default function DashboardPage() {
         const uniqueSpecies = new Set(sightings.map(s => s.species))
 
         // --- Threads ---
-        const threadsQuery = query(collection(db, "threads"), where("userId", "==", user.uid))
+        const threadsQuery = query(collection(db, "forumThreads"), where("userId", "==", user.uid))
         const threadsSnap = await getDocs(threadsQuery)
 
         // --- Alerts ---
-        const alertsQuery = query(collection(db, "alerts"), where("userId", "==", user.uid))
+        const alertsQuery = query(collection(db, "userAlerts"), where("userId", "==", user.uid))
         const alertsSnap = await getDocs(alertsQuery)
 
         setStats({

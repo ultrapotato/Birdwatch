@@ -1,5 +1,3 @@
-import type { Timestamp } from "firebase-admin/firestore"
-
 // General information about a bird species
 export interface BirdSpecies {
   id?: string // Firestore document ID
@@ -30,7 +28,7 @@ export interface BirdSightingComment {
   userName: string
   userAvatar?: string
   text: string
-  createdAt: Timestamp | string // Firestore Timestamp or ISO string
+  createdAt:  string // ISO string
   likes: number
 }
 
@@ -56,5 +54,5 @@ export interface BirdSighting {
   likesCount: number
   // comments will be a subcollection: sightings/{sightingId}/comments
   createdAt:   string // Firestore Timestamp or ISO string
-  updatedAt?: Timestamp | string
+  updatedAt?:   string
 }

@@ -1,6 +1,8 @@
 import { firestoreAdmin } from "@/lib/firebase/firebase-admin"
-import type { BirdSighting, BirdSpecies } from "@/lib/models/bird.models"
+import type { BirdSighting, BirdSightingComment, BirdSpecies } from "@/lib/models/bird.models"
 import type { Query } from "firebase-admin/firestore"
+import { increment } from "firebase/firestore"
+import { FieldValue } from "firebase-admin/firestore"
 
 if (!firestoreAdmin) {
   console.warn("Firestore Admin is not initialized. BirdService may not function correctly.")
@@ -173,3 +175,47 @@ export async function deleteBirdSighting(sightingId: string, userId: string): Pr
 
 // TODO: Implement updateBirdSighting
 // TODO: Implement methods for comments (addCommentToSighting, getSightingComments)
+
+export async function addCommentToSighting(
+  sightingId: string,
+  comment: Omit<BirdSightingComment, "id" | "likes" | "createdAt">
+): Promise<BirdSightingComment> {
+  if (!sightingsCollection) throw new Error("Sightings collection not available.")
+
+  const commentData: BirdSightingComment = {
+    ...comment,
+    createdAt: new Date().toISOString(),
+    likes: 0,
+  }
+
+  const docRef = await sightingsCollection
+    .doc(sightingId)
+    .collection("comments")
+    .add(commentData)
+
+  return { id: docRef.id, ...commentData }
+}
+
+export async function getSightingComments(sightingId: string): Promise<BirdSightingComment[]> {
+  if (!sightingsCollection) throw new Error("Sightings collection not available.")
+
+  const snapshot = await sightingsCollection
+    .doc(sightingId)
+    .collection("comments")
+    .orderBy("createdAt", "desc")
+    .get()
+
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as BirdSightingComment))
+}
+
+export async function incrementBirdLikeCount(id: string) {
+  if (!sightingsCollection) throw new Error("Sightings collection not available.")
+
+  const birdRef = sightingsCollection.doc(id)
+  await birdRef.update({
+    likes: FieldValue.increment(1)
+  })
+  const updatedDoc = await birdRef.get()
+  return updatedDoc.data()
+}
+

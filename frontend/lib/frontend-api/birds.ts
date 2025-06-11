@@ -1,4 +1,4 @@
-import type { BirdSighting, BirdSpecies } from "@/lib/models/bird.models"
+import type { BirdSighting, BirdSightingComment, BirdSpecies } from "@/lib/models/bird.models"
 import { auth } from "@/lib/firebase/firebase" // For getting ID token
 
 const API_BASE_URL = "/api" // Assuming Next.js API routes are at /api
@@ -101,14 +101,14 @@ export const getCommonBirds = async (): Promise<Partial<BirdSpecies>[]> => {
       speciesName: "Northern Cardinal",
       description: "Bright red bird...",
       habitat: "Woodlands",
-      defaultImageUrl: "/placeholder.svg?height=200&width=200",
+      defaultImageUrl: "https://images.unsplash.com/photo-1652064239805-877a0bfcfd5c?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       id: "2",
       speciesName: "American Robin",
       description: "Gray-brown bird...",
       habitat: "Lawns",
-      defaultImageUrl: "/placeholder.svg?height=200&width=200",
+      defaultImageUrl: "https://images.unsplash.com/photo-1613832663019-c5fd565d6155?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
   ]
 }
@@ -127,5 +127,53 @@ export const getAllBirds = async ({ sortBy = "recent" ,query}: { sortBy?: string
 
   const response = await fetch(`${API_BASE_URL}/birds?${queryParams.toString()}`)
   if (!response.ok) throw new Error("Failed to fetch all birds")
+  return response.json()
+}
+
+export const getBirdSightingComments = async (birdId: string): Promise<BirdSightingComment[]> => {
+  const response = await fetch(`${API_BASE_URL}/birds/${birdId}/comments`)
+  if (!response.ok) throw new Error("Failed to fetch nearby birds")
+  return response.json()
+}
+
+export const addBirdSightingComment = async (
+  birdId: string,
+  comment: Omit<BirdSightingComment, "id" | "likes" | "createdAt">
+): Promise<BirdSightingComment> => {
+  const headers = await getAuthHeaders()
+  if (!headers.Authorization) throw new Error("User not authenticated")
+
+  const response = await fetch(`${API_BASE_URL}/birds/${birdId}/comments`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      sightingId: birdId,
+      comments: comment,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.error || "Failed to post comment")
+  }
+
+  return response.json()
+}
+
+
+export const likeBirdSighting = async (id: string): Promise<any> => {
+  const headers = await getAuthHeaders()
+  if (!headers.Authorization) throw new Error("User not authenticated")
+
+  const response = await fetch(`${API_BASE_URL}/birds/${id}/likes`, {
+    method: "POST", // or PATCH if you prefer
+    headers,
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.error || "Failed to like bird sighting")
+  }
+
   return response.json()
 }

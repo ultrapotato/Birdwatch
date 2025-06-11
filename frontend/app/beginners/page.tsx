@@ -205,7 +205,7 @@
 
         <div className="relative rounded-lg overflow-hidden">
           <img
-            src="/placeholder.svg?height=500&width=1200"
+            src="https://plus.unsplash.com/premium_photo-1663050831742-245bfef946f2?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=500&width=1200"
             alt="Bird watching"
             className="w-full h-auto object-cover"
           />
