@@ -6,7 +6,7 @@ import { getArticleById } from "@/lib/frontend-api/articles"
 import { Article } from "@/lib/models/article.models"
 import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
-import ReactMarkdown from "react-markdown"
+import Markdown from 'react-markdown'
 
 export default function ArticleDetailPage() {
   const { id } = useParams() as { id: string }
@@ -72,7 +72,7 @@ export default function ArticleDetailPage() {
       )}
 
       <article className="prose dark:prose-invert">
-        <ReactMarkdown>{article.content}</ReactMarkdown>
+        <Markdown>{article.content}</Markdown>
       </article>
 
       <div className="mt-10 text-sm text-muted-foreground">
