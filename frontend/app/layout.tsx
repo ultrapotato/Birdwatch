@@ -24,7 +24,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <FirebaseProvider>
             <div className="w-full mx-auto">
@@ -46,6 +45,7 @@ export default function RootLayout({
             <Toaster />
           </FirebaseProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
